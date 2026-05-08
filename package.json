@@ -2,7 +2,7 @@
   "name": "m-stdlib-vscode",
   "displayName": "m-stdlib",
   "description": "VS Code language tooling for m-stdlib — manifest-driven hover, goto-definition, and completion for STD* symbols in M (MUMPS) source.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "rafael5",
   "license": "MIT",
   "engines": {
@@ -34,6 +34,12 @@
         "id": "m",
         "aliases": ["M", "MUMPS"],
         "extensions": [".m"]
+      }
+    ],
+    "snippets": [
+      {
+        "language": "m",
+        "path": "./snippets/m.json"
       }
     ],
     "configuration": {

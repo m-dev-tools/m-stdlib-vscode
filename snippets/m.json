@@ -1,0 +1,55 @@
+{
+  "STDASSERT test suite skeleton": {
+    "prefix": "stdassert-suite",
+    "scope": "m",
+    "description": "Skeleton for an m-stdlib test suite that drives STDASSERT. Drops in the start/report scaffolding, one example test label, and the @TEST runner annotation that m-cli's `m test` uses to discover individual test labels.",
+    "body": [
+      "${1:STDFOOTST}\t; Test suite for ${2:STDFOO}.",
+      "\tnew pass,fail",
+      "\tdo start^STDASSERT(.pass,.fail)",
+      "\t;",
+      "\tdo ${3:tCase1}(.pass,.fail)",
+      "\t;",
+      "\tdo report^STDASSERT(pass,fail)",
+      "\tquit",
+      "\t;",
+      "${3:tCase1}(pass,fail)\t;@TEST \"${4:describe what this test pins}\"",
+      "\tdo eq^STDASSERT(.pass,.fail,${5:actual},${6:expected},\"${4:describe what this test pins}\")",
+      "\tquit",
+      "\t;"
+    ]
+  },
+
+  "STDFIX `with` — transactional scope wrapper": {
+    "prefix": "stdfix-with",
+    "scope": "m",
+    "description": "Run a block of M code inside a YDB transaction that rolls back on exit (or on any error). Pattern: caller passes a scope tag (recorded in the stack for diagnostics) and a string of M commands. The `with` helper opens TSTART, XECUTEs the code, then TROLLBACKs exactly the level it opened — outer transactions are preserved.",
+    "body": [
+      "do with^STDFIX(\"${1:scope-tag}\",\"${2:do migrate^DDL}\")"
+    ]
+  },
+
+  "STDLOG kv line — structured logger": {
+    "prefix": "stdlog-kv",
+    "scope": "m",
+    "description": "Emit one structured log line with the key=value protocol m-stdlib's STDLOG uses. Up to 5 (k,v) pairs after the event name; the line is prefixed with an ISO-8601 UTC timestamp and the level name. Use INFO / DEBUG / WARN / ERROR / FATAL to pick the level.",
+    "body": [
+      "do ${1|INFO,DEBUG,WARN,ERROR,FATAL|}^STDLOG(\"${2:event_name}\",\"${3:key}\",\"${4:value}\")"
+    ]
+  },
+
+  "STDJSON parse-then-walk": {
+    "prefix": "stdjson-parse",
+    "scope": "m",
+    "description": "Parse a JSON document into a caller-owned tree, then walk the root if it's an array. Handles parse failure cleanly: $$lastError^STDJSON returns the line:col diagnostic; the partial tree is killed by parse() before this code runs. Storage convention: each JSON value occupies one M-tree node with a sigil prefix (s:string, n:number, o object, a array, t/f/z literals).",
+    "body": [
+      "new ${1:tree}",
+      "if '\\$\\$parse^STDJSON(${2:jsonText},.${1:tree}) write \"json error: \",\\$\\$lastError^STDJSON(),! quit",
+      "if \\$\\$type^STDJSON(.${1:tree})=\"array\" do",
+      ". new i",
+      ". set i=\"\"",
+      ". for  set i=\\$order(${1:tree}(i)) quit:i=\"\"  do",
+      ". . ${0:; act on ${1:tree}(i) — \\$\\$type^STDJSON / \\$\\$valueOf^STDJSON}"
+    ]
+  }
+}
