@@ -1,0 +1,77 @@
+{
+  "name": "m-stdlib-vscode",
+  "displayName": "m-stdlib",
+  "description": "VS Code language tooling for m-stdlib — manifest-driven hover, goto-definition, and completion for STD* symbols in M (MUMPS) source.",
+  "version": "0.1.0",
+  "publisher": "rafael5",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "M",
+    "MUMPS",
+    "YottaDB",
+    "IRIS",
+    "VistA",
+    "m-stdlib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rafael5/m-stdlib-vscode"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:m"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "m",
+        "aliases": ["M", "MUMPS"],
+        "extensions": [".m"]
+      }
+    ],
+    "configuration": {
+      "title": "m-stdlib",
+      "properties": {
+        "m-stdlib.manifestPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to dist/stdlib-manifest.json. Empty = auto-discover (workspace folder → walk up; then $M_CLI_MANIFEST; then ~/projects/m-stdlib/dist/stdlib-manifest.json)."
+        },
+        "m-stdlib.enableHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show hover docs on `^STD*` and `label^STDxxx` symbols."
+        },
+        "m-stdlib.enableDefinition": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Cmd/Ctrl-click goto-definition for `^STD*` symbols."
+        },
+        "m-stdlib.enableCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Suggest module + label names as completions in `.m` files."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "tsc -p ./ --noEmit && node --test --experimental-strip-types tests/*.test.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}
