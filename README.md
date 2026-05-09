@@ -1,6 +1,6 @@
 # m-stdlib (VS Code extension)
 
-Manifest-driven editor tooling for [m-stdlib](https://github.com/rafael5/m-stdlib).
+Manifest-driven editor tooling for [m-stdlib](https://github.com/m-dev-tools/m-stdlib).
 Reads the canonical `dist/stdlib-manifest.json` produced by m-stdlib's
 generator and surfaces it as hover docs, goto-definition, and
 completion in any open `.m` file.

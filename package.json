@@ -22,7 +22,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rafael5/m-stdlib-vscode"
+    "url": "https://github.com/m-dev-tools/m-stdlib-vscode"
   },
   "main": "./out/extension.js",
   "activationEvents": [
