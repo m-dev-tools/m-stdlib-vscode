@@ -86,9 +86,17 @@ code .
 
 ## Status
 
-v0.1 — hover + goto-def + completion. Snippets and a richer
-diagnostic surface are tracked as follow-on work in m-stdlib's
-`docs/tracking/discoverability-tracker.md` (WC2).
+- **v0.1** — hover, goto-def, completion (manifest-driven, scoped
+  to `STD*` symbols).
+- **v0.2** — snippet pack for canonical m-stdlib idioms.
+- **2026-05** Tier 4 self-containment work (commit `43efcf0`):
+  bundled `assets/stdlib-manifest.json` snapshot replaces the
+  `~/projects/m-stdlib/dist/...` filesystem fallback; the extension
+  works on a stock install with no other repo on disk.
+
+Richer diagnostic surface and additional discoverability features
+remain follow-on work in m-stdlib's
+`docs/tracking/discoverability-tracker.md`.
 
 ## License
 
