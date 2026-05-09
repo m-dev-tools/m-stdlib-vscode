@@ -38,6 +38,7 @@ describe("findManifest", () => {
       workspaceFolders: [deep],
       env: {},
       homeDir: "/nonexistent",
+      bundledManifestPath: "/nonexistent",
     });
     assert.equal(resolved, target);
   });
@@ -56,6 +57,7 @@ describe("findManifest", () => {
       workspaceFolders: [tmpRoot],
       env: {},
       homeDir: "/nonexistent",
+      bundledManifestPath: "/nonexistent",
     });
     assert.equal(resolved, elsewhere);
   });
@@ -70,6 +72,7 @@ describe("findManifest", () => {
       env: { M_CLI_MANIFEST: envTarget },
       workspaceFolders: [tmpRoot],
       homeDir: "/nonexistent",
+      bundledManifestPath: "/nonexistent",
     });
     assert.equal(viaEnv, envTarget);
   });
@@ -79,6 +82,7 @@ describe("findManifest", () => {
       workspaceFolders: [tmpRoot],
       env: {},
       homeDir: "/nonexistent",
+      bundledManifestPath: "/nonexistent",
     });
     assert.equal(r, null);
   });
@@ -91,8 +95,37 @@ describe("findManifest", () => {
       explicit: "~/manifest.json",
       env: {},
       homeDir,
+      bundledManifestPath: "/nonexistent",
     });
     assert.equal(r, target);
+  });
+
+  it("falls back to the bundled manifest as last resort", () => {
+    const bundled = path.join(tmpRoot, "bundled-manifest.json");
+    fs.writeFileSync(bundled, "{}");
+    const r = findManifest({
+      workspaceFolders: [tmpRoot],
+      env: {},
+      homeDir: "/nonexistent",
+      bundledManifestPath: bundled,
+    });
+    assert.equal(r, bundled);
+  });
+
+  it("workspace walk-up beats bundled fallback", () => {
+    const distDir = path.join(tmpRoot, "dist");
+    fs.mkdirSync(distDir);
+    const inTree = path.join(distDir, "stdlib-manifest.json");
+    fs.writeFileSync(inTree, "{}");
+    const bundled = path.join(tmpRoot, "bundled-manifest.json");
+    fs.writeFileSync(bundled, "{}");
+    const r = findManifest({
+      workspaceFolders: [tmpRoot],
+      env: {},
+      homeDir: "/nonexistent",
+      bundledManifestPath: bundled,
+    });
+    assert.equal(r, inTree);
   });
 });
 

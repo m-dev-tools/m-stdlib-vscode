@@ -48,7 +48,7 @@
         "m-stdlib.manifestPath": {
           "type": "string",
           "default": "",
-          "description": "Path to dist/stdlib-manifest.json. Empty = auto-discover (workspace folder → walk up; then $M_CLI_MANIFEST; then ~/projects/m-stdlib/dist/stdlib-manifest.json)."
+          "description": "Path to dist/stdlib-manifest.json. Empty = auto-discover: workspace folder walk-up, then $M_CLI_MANIFEST, then the manifest bundled with the extension. Set this to your m-stdlib checkout's dist/stdlib-manifest.json for live tracking."
         },
         "m-stdlib.enableHover": {
           "type": "boolean",

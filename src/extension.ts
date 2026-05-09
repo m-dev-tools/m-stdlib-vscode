@@ -106,9 +106,10 @@ function surfaceInitialStatus(): void {
     );
     item.text = "$(warning) m-stdlib: manifest not found";
     item.tooltip =
-      "The m-stdlib extension can't find dist/stdlib-manifest.json. " +
-      "Open an m-stdlib checkout, set m-stdlib.manifestPath in settings, " +
-      "or set $M_CLI_MANIFEST in the environment.";
+      "The m-stdlib extension can't find dist/stdlib-manifest.json — " +
+      "this should not happen on a normal install (the extension ships " +
+      "with a bundled manifest). Verify the .vsix is intact, set " +
+      "m-stdlib.manifestPath in settings, or export $M_CLI_MANIFEST.";
     item.show();
     setTimeout(() => item.dispose(), 5000);
   }

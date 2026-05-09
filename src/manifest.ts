@@ -8,7 +8,17 @@
  *   2. environment variable `M_CLI_MANIFEST`        (CI / scripted)
  *   3. walk up from the workspace folder looking
  *      for `dist/stdlib-manifest.json`              (in-tree checkout)
- *   4. fall back to `~/projects/m-stdlib/dist/stdlib-manifest.json`
+ *   4. fall back to the manifest bundled with the extension
+ *      (`<extension>/assets/stdlib-manifest.json`) — versioned to the
+ *      extension release, so installing the .vsix is enough to get a
+ *      working setup with no other repo on disk.
+ *
+ * Earlier versions fell back to `~/projects/m-stdlib/dist/...`. That
+ * coupled the extension to the maintainer's filesystem layout; it was
+ * removed in Tier 4 of the m-dev-tools self-containment sprint
+ * (2026-05-09). Maintainers who want "live" manifest tracking still
+ * point `m-stdlib.manifestPath` or `$M_CLI_MANIFEST` at their
+ * checkout's `dist/stdlib-manifest.json`.
  *
  * The result is cached on first successful load and invalidated when
  * the manifest file's mtime changes — see `loadManifest()`.
@@ -103,15 +113,49 @@ export interface ResolveOptions {
   /** Workspace folder(s) the editor knows about. The first folder
    *  whose tree contains `dist/stdlib-manifest.json` wins. */
   workspaceFolders?: string[];
-  /** Defaults to `os.homedir()` — overridable in tests. */
+  /** Used only to expand `~` in `explicit` and `$M_CLI_MANIFEST` paths.
+   *  Defaults to `os.homedir()`; tests pass an isolated tmp dir. */
   homeDir?: string;
+  /** Final fallback — manifest bundled with the extension at
+   *  `<extension>/assets/stdlib-manifest.json`. Defaults to that path
+   *  computed via `__dirname` so production callers don't have to
+   *  thread it through. Tests pass a non-existent path to exercise
+   *  the "nothing resolves" case. */
+  bundledManifestPath?: string;
+}
+
+/** Path to the manifest bundled with the extension itself. The compiled
+ *  module sits in `out/manifest.js`; resolving `..` gets us back to the
+ *  extension root, where `assets/stdlib-manifest.json` lives. The same
+ *  expression resolves correctly when imported from compiled JS during
+ *  normal extension activation.
+ *
+ *  Computed lazily because `__dirname` only exists in CommonJS scope —
+ *  in tests, Node's `--experimental-strip-types` loads this `.ts` file
+ *  as an ES module where `__dirname` is `ReferenceError`. The `typeof`
+ *  guard makes module evaluation safe in both modes; tests pass an
+ *  explicit `bundledManifestPath`, so the ESM branch never has to
+ *  produce a real path.
+ */
+export function defaultBundledManifestPath(): string {
+  if (typeof __dirname !== "undefined") {
+    return path.resolve(__dirname, "..", "assets", "stdlib-manifest.json");
+  }
+  // ESM-only path (tests). Return a sentinel that safeIsFile() will reject.
+  return "";
 }
 
 /** Resolve the path to the manifest per the discovery order in the
  *  module docstring. Returns null when no candidate is reachable.
  */
 export function findManifest(opts: ResolveOptions = {}): string | null {
-  const { explicit, env = process.env, workspaceFolders = [], homeDir = os.homedir() } = opts;
+  const {
+    explicit,
+    env = process.env,
+    workspaceFolders = [],
+    homeDir = os.homedir(),
+    bundledManifestPath = defaultBundledManifestPath(),
+  } = opts;
 
   if (explicit && explicit.trim() !== "") {
     const expanded = explicit.startsWith("~")
@@ -133,8 +177,7 @@ export function findManifest(opts: ResolveOptions = {}): string | null {
     if (hit !== null) return hit;
   }
 
-  const fallback = path.join(homeDir, "projects", "m-stdlib", "dist", "stdlib-manifest.json");
-  return safeIsFile(fallback) ? fallback : null;
+  return safeIsFile(bundledManifestPath) ? bundledManifestPath : null;
 }
 
 /** mtime + path combine into a cache key — cheap enough that we can
