@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Phase-0 manifest contract gate
+        # Asserts dist/repo.meta.json parses, carries all required fields,
+        # and every exposes.* path resolves on disk. Cross-repo tier-2
+        # contract per .github/docs/AI-discoverability-plan.md §3.4.
+        # Runs before npm install so a broken manifest fails fast.
+        run: make check-manifest
+
+      - name: docs/ prose-only gate
+        # Cross-repo guardrail: docs/ holds only human-readable prose.
+        run: make check-docs-prose
+
+      - uses: actions/setup-node@v4
+        with:
+          # Node 22 — required for `node --test --experimental-strip-types`
+          # which is the test runner npm test invokes against tests/*.test.ts.
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build + test
+        # `npm test` is `tsc -p ./ --noEmit && node --test tests/*.test.ts`
+        # — it type-checks src/ + tests/ and runs the unit suite.
+        run: npm test
+
+      - name: Compile extension
+        # Produces out/extension.js — the marketplace entry point.
+        run: npm run compile
