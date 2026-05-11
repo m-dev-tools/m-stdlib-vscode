@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/m-dev-tools/.github/main/profile/repo.meta.schema.json",
+  "id": "tool:m-stdlib-vscode",
+  "repo": "https://github.com/m-dev-tools/m-stdlib-vscode",
+  "role": "VS Code extension — manifest-driven hover / goto-def / completion for STD* symbols in .m files",
+  "language": ["typescript"],
+  "license": "MIT",
+  "agent_instructions": "AGENTS.md",
+  "verified_on": "2026-05-10",
+  "exposes": {
+    "extension_info": "dist/extension-info.json",
+    "package_json":   "package.json"
+  },
+  "consumes": ["tool:m-stdlib"],
+  "verification_commands": ["make check-manifest"],
+  "status": "active"
+}

@@ -1,0 +1,44 @@
+{
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "license": "MIT",
+  "manifest_discovery_order": [
+    "m-stdlib.manifestPath setting",
+    "$M_CLI_MANIFEST env var",
+    "workspace folder walk-up",
+    "bundled assets/stdlib-manifest.json"
+  ],
+  "marketplace_id": "rafael5.m-stdlib-vscode",
+  "name": "m-stdlib-vscode",
+  "publisher": "rafael5",
+  "schema_version": "1",
+  "settings": [
+    {
+      "default": "",
+      "description": "Path to dist/stdlib-manifest.json. Empty = auto-discover: workspace folder walk-up, then $M_CLI_MANIFEST, then the manifest bundled with the extension. Set this to your m-stdlib checkout's dist/stdlib-manifest.json for live tracking.",
+      "key": "m-stdlib.manifestPath",
+      "type": "string"
+    },
+    {
+      "default": true,
+      "description": "Show hover docs on `^STD*` and `label^STDxxx` symbols.",
+      "key": "m-stdlib.enableHover",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "description": "Enable Cmd/Ctrl-click goto-definition for `^STD*` symbols.",
+      "key": "m-stdlib.enableDefinition",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "description": "Suggest module + label names as completions in `.m` files.",
+      "key": "m-stdlib.enableCompletion",
+      "type": "boolean"
+    }
+  ],
+  "snippets_path": "snippets/",
+  "version": "0.2.0"
+}
